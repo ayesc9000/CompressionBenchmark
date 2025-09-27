@@ -1,0 +1,73 @@
+# System.Compression Benchmark
+
+## About
+
+This is a simple set of benchmarks to analyze the performance of the built-in
+compression and decompression routines provided in .NET via the
+System.Compression namespace.
+
+## Usage
+
+To run the benchmarks yourself, clone the repository to your local machine, and
+run the project in a release configuration with no debugger attached.
+(Ctrl + F5 in Visual Studio to run with no debugger attached.)
+
+## Results
+
+Below are the results that I obtained from running the benchmark on my personal
+machine. This is not a 100% scientific or perfect benchmark, and is only
+provided to demonstrate the benchmark and give a rough idea of the relative
+performance of System.Compression. You will always get the most accurate results
+for your environment by running the benchmarks yourself.
+
+Processor: `AMD Ryzen 7 5700X @ 3.40GHz, 8 cores/16 threads`
+
+Operating System: `Windows 11 10.0.26100.6584`
+
+.NET Version: `.NET 9.0.9 (9.0.9, 9.0.925.41916), X64 RyuJIT x86-64-v3`
+
+BenchmarkDotNet Version: `v0.15.4`
+
+### Compression Benchmark
+
+Brotli performed the best on both the Fastest and Optimal compression levels,
+but ran really fucking slowly on SmallestSize.
+
+If you're targeting speed, Brotli with the Fastest compression level is ideal.
+If you need to use the SmallestSize compression level, then use Deflate.
+
+The benchmark currently does not display the resulting size from the
+compression, which annoys me greatly. This will be fixed and the benchmark
+re-ran in the future with the output size factored in.
+
+| Method  | Level        | Mean         | Error      | StdDev     |
+|-------- |------------- |-------------:|-----------:|-----------:|
+| Brotli  | Fastest      |     67.62 ms |   0.885 ms |   0.784 ms |
+| GZip    | Fastest      |  1,067.16 ms |   2.623 ms |   2.325 ms |
+| ZLib    | Fastest      |  1,068.46 ms |   5.120 ms |   4.539 ms |
+| Deflate | Fastest      |  1,065.43 ms |   4.151 ms |   3.680 ms |
+| Brotli  | Optimal      |    248.40 ms |   4.866 ms |   6.821 ms |
+| GZip    | Optimal      |  2,584.91 ms |  22.277 ms |  18.602 ms |
+| ZLib    | Optimal      |  2,597.99 ms |   5.010 ms |   4.687 ms |
+| Deflate | Optimal      |  2,574.67 ms |   6.509 ms |   6.088 ms |
+| Brotli  | SmallestSize | 59,121.11 ms | 123.547 ms | 103.167 ms |
+| GZip    | SmallestSize |  2,129.91 ms |   4.877 ms |   4.562 ms |
+| ZLib    | SmallestSize |  2,130.75 ms |   4.335 ms |   3.843 ms |
+| Deflate | SmallestSize |  2,121.33 ms |   4.400 ms |   4.116 ms |
+
+### Decompression Benchmark
+
+This benchmark is purely focused on speed. All of the test data was generated
+using the respective compressor provided by System.Compression at the Optimal
+compression level.
+
+Brotli performs the worst, opposite of most of its results from above
+(excluding SmallestSize). Deflate performs the best with a near-11 millisecond
+improvement over Brotli.
+
+| Method  | Mean     | Error    | StdDev   | Median   |
+|-------- |---------:|---------:|---------:|---------:|
+| Brotli  | 55.14 ms | 1.095 ms | 1.605 ms | 55.61 ms |
+| GZip    | 51.61 ms | 1.008 ms | 1.238 ms | 52.05 ms |
+| ZLib    | 46.85 ms | 0.913 ms | 1.422 ms | 46.08 ms |
+| Deflate | 44.30 ms | 0.873 ms | 1.360 ms | 43.54 ms |
