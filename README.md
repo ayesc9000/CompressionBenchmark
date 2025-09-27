@@ -3,8 +3,8 @@
 ## About
 
 This is a simple set of benchmarks to analyze the performance of the built-in
-compression and decompression routines provided in .NET via the
-System.Compression namespace.
+compression and decompression routines provided in .NET via the stream types in
+the System.Compression namespace.
 
 ## Usage
 
